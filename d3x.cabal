@@ -1,0 +1,44 @@
+cabal-version:       2.2
+name:                d3x
+version:             0.1.0.0
+synopsis:            D3-style SVG visualizations in Haskell with HSX
+description:         Composable SVG primitives (dots, lines, axes, labels, scales)
+                     for building data visualizations using IHP's HSX quasiquoter.
+license:             MIT
+author:              Lambert
+build-type:          Simple
+
+common common-extensions
+    default-extensions:
+        OverloadedStrings
+        , QuasiQuotes
+        , RecordWildCards
+        , ScopedTypeVariables
+        , BangPatterns
+        , FlexibleInstances
+        , FlexibleContexts
+
+common common-flags
+    ghc-options:
+        -Wall
+        -Wredundant-constraints
+        -Wunused-imports
+        -fstatic-argument-transformation
+        -funbox-strict-fields
+
+library
+    import: common-extensions, common-flags
+    default-language: GHC2021
+    hs-source-dirs: lib
+    exposed-modules:
+        D3X.Blocks
+        , D3X.Scales
+        , D3X.Prelude
+    build-depends:
+          base >= 4.17.0 && < 4.22
+        , text
+        , time
+        , ihp-hsx
+        , blaze-html
+        , blaze-markup
+        , string-conversions
