@@ -5,7 +5,7 @@ synopsis:            D3-style SVG visualizations in Haskell with HSX
 description:         Composable SVG primitives (dots, lines, axes, labels, scales)
                      for building data visualizations using IHP's HSX quasiquoter.
 license:             MIT
-author:              Lambert
+author:              Comhlan Ltd.
 build-type:          Simple
 
 common common-extensions
@@ -33,11 +33,14 @@ library
     exposed-modules:
         D3X.Blocks
         , D3X.Scales
+        , D3X.Path
+        , D3X.Pie
         , D3X.Prelude
     build-depends:
           base >= 4.17.0 && < 4.22
         , text
         , time
+        , mtl
         , ihp-hsx
         , blaze-html
         , blaze-markup
