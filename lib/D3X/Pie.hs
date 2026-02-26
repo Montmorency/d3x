@@ -283,7 +283,7 @@ pieLayout values =
         tau   = 2 * pi
         cumulative = scanl (+) 0 values
         starts = init cumulative
-        ends   = tail cumulative
+        ends   = drop 1 cumulative
         toAngle v
             | total > 0 = v / total * tau
             | otherwise = 0

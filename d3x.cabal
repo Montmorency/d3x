@@ -36,6 +36,7 @@ library
         , D3X.Path
         , D3X.Pie
         , D3X.Prelude
+        , D3X.Stack
     build-depends:
           base >= 4.17.0 && < 4.22
         , text
@@ -45,3 +46,4 @@ library
         , blaze-html
         , blaze-markup
         , string-conversions
+        , containers
