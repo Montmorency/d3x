@@ -5,7 +5,7 @@ import D3X.Prelude
 import D3X.Scales (Coordinate, showCoord)
 import IHP.HSX.QQ (hsx)
 import IHP.HSX.ToHtml ()
-import Text.Blaze.Html (Html)
+import IHP.HSX.Markup (Html)
 
 -- | Convert an attrs record to [(Text, Text)] for HSX spread syntax
 class SpreadAttrs a where

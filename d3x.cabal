@@ -43,7 +43,5 @@ library
         , time
         , mtl
         , ihp-hsx
-        , blaze-html
-        , blaze-markup
         , string-conversions
         , containers

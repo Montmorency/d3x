@@ -4,7 +4,7 @@ import D3X.Prelude
 import D3X.Blocks
 import D3X.Scales
 import IHP.HSX.QQ (hsx)
-import Text.Blaze.Html (Html)
+import IHP.HSX.Markup (Html)
 import Data.Time.Calendar (Day, diffDays, addDays)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.String.Conversions (cs)
