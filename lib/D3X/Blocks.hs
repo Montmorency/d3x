@@ -3,9 +3,8 @@ module D3X.Blocks where
 
 import D3X.Prelude
 import D3X.Scales (Coordinate, showCoord)
-import IHP.HSX.QQ (hsx)
-import IHP.HSX.ToHtml ()
-import IHP.HSX.Markup (Html)
+import IHP.HSX.MarkupQQ (hsx)
+import IHP.HSX.Markup (Html, ToHtml(..))
 
 -- | Convert an attrs record to [(Text, Text)] for HSX spread syntax
 class SpreadAttrs a where

@@ -3,7 +3,7 @@ module D3X.Examples where
 import D3X.Prelude
 import D3X.Blocks
 import D3X.Scales
-import IHP.HSX.QQ (hsx)
+import IHP.HSX.MarkupQQ (hsx)
 import IHP.HSX.Markup (Html)
 import Data.Time.Calendar (Day, diffDays, addDays)
 import Data.Time.Format (formatTime, defaultTimeLocale)
