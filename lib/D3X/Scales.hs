@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitPrelude #-}
 module D3X.Scales where
 
 import D3X.Prelude

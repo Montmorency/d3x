@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitPrelude #-}
 {-# LANGUAGE RecordWildCards #-}
 module D3X.Blocks where
 

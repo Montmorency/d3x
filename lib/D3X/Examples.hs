@@ -1,10 +1,22 @@
+{-# LANGUAGE ImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 module D3X.Examples where
 
 import D3X.Prelude
 import D3X.Blocks
 import D3X.Scales
+import D3X.Geo
+    ( FeatureCollection(..), Feature, GeoObject(..)
+    , decodeFeatureProperties
+    , geoIdentity, reflectY, fitSize
+    , geoPath, Projection
+    )
 import IHP.HSX.MarkupQQ (hsx)
 import IHP.HSX.Markup (Html)
+import Data.Aeson (FromJSON(..), withObject, (.:))
+import Data.Function ((&))
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as Map
 import Data.Time.Calendar (Day, diffDays, addDays)
 import Data.Time.Format (formatTime, defaultTimeLocale)
 import Data.String.Conversions (cs)
@@ -32,7 +44,7 @@ renderPriceSparkline pts = [hsx|
         <g>
             {axisLines}
             {axisLabels}
-            {map renderPriceDot pts}
+            {forEach pts renderPriceDot}
         </g>
     </svg>
     |]
@@ -93,3 +105,57 @@ formatDayCompact = cs . formatTime defaultTimeLocale "%d/%m"
 
 formatPrice :: Double -> Text
 formatPrice p = tshow (fromIntegral (round (p * 100)) / 100.0 :: Double)
+
+------------------------------------------------------------------------
+-- Ireland counties (showcase example)
+------------------------------------------------------------------------
+
+-- | Decoded shape of the @"NAME"@ field on each Ireland county feature.
+newtype CountyName = CountyName { unCountyName :: Text }
+
+instance FromJSON CountyName where
+    parseJSON = withObject "CountyName" $ \o -> CountyName <$> o .: "NAME"
+
+-- | Render an Irish-counties 'FeatureCollection' as a full-width SVG map,
+--   fitted to a 960×600 viewBox via 'geoIdentity' + 'reflectY' (the
+--   data is in Irish National Grid easting/northing).
+--
+--   Each county's @\<title\>@ shows its name on hover. If the county's
+--   @"NAME"@ is a key in the @actions@ map, the path is wired with
+--   @hx-get=URL@ — clicking triggers the htmx request inheriting any
+--   ancestor @hx-target@. Counties absent from the map render inert.
+renderIrelandCounties
+    :: FeatureCollection
+    -> Map Text Text   -- ^ @countyName -> URL@ for htmx click actions
+    -> Html
+renderIrelandCounties fc actions =
+    let proj = geoIdentity & reflectY True & fitSize (mapW, mapH) (GoFeatureCollection fc)
+        viewBox = "0 0 " <> tshow mapW <> " " <> tshow mapH
+    in [hsx|
+        <svg viewBox={viewBox} width="100%" style="display:block;">
+            {forEach (fcFeatures fc) (renderCounty proj actions)}
+        </svg>
+    |]
+  where
+    mapW, mapH :: Double
+    mapW = 960
+    mapH = 600
+
+renderCounty :: Projection -> Map Text Text -> Feature -> Html
+renderCounty proj actions f =
+    let d    = geoPath proj (GoFeature f)
+        name = case decodeFeatureProperties f of
+                   Right (CountyName n) -> n
+                   Left _               -> ""
+        clickAttrs = case Map.lookup name actions of
+            Just url -> [("hx-get", url), ("style", "cursor:pointer; transition: fill 0.15s ease;")]
+            Nothing  -> [("style", "transition: fill 0.15s ease;")]
+    in [hsx|
+        <path d={d}
+              fill="#cfd8dc" stroke="#ffffff" stroke-width="0.7"
+              {...clickAttrs}
+              onmouseover="this.style.fill='#90a4ae'"
+              onmouseout="this.style.fill='#cfd8dc'">
+            <title>{name}</title>
+        </path>
+    |]

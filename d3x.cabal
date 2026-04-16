@@ -37,6 +37,21 @@ library
         , D3X.Pie
         , D3X.Prelude
         , D3X.Stack
+        , D3X.Examples
+        , D3X.Geo
+        , D3X.Geo.GeoJSON
+        , D3X.Geo.Stream
+        , D3X.Geo.Math
+        , D3X.Geo.Raw
+        , D3X.Geo.Rotation
+        , D3X.Geo.Clip
+        , D3X.Geo.Resample
+        , D3X.Geo.Projection
+        , D3X.Geo.Bounds
+        , D3X.Geo.Cartesian
+        , D3X.Geo.Fit
+        , D3X.Geo.Graticule
+        , D3X.Geo.Path
     build-depends:
           base >= 4.17.0 && < 4.22
         , text
@@ -45,3 +60,6 @@ library
         , ihp-hsx
         , string-conversions
         , containers
+        , aeson
+        , bytestring
+        , vector

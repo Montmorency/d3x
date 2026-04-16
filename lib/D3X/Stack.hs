@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitPrelude #-}
 module D3X.Stack
     ( -- * Stack Data Types
       StackInterval(..)

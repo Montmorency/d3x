@@ -1,3 +1,4 @@
+{-# LANGUAGE ImplicitPrelude #-}
 module D3X.Pie
     ( -- * Arc Configuration
       ArcConfig(..)
