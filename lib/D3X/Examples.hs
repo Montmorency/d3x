@@ -128,12 +128,22 @@ renderIrelandCounties
     :: FeatureCollection
     -> Map Text Text   -- ^ @countyName -> URL@ for htmx click actions
     -> Html
-renderIrelandCounties fc actions =
+renderIrelandCounties fc actions = renderIrelandCountiesFilled fc actions Map.empty
+
+-- | Choropleth variant: each county's fill is looked up in the @fills@ map;
+--   counties without an entry render in the neutral default. Click actions
+--   work the same as 'renderIrelandCounties'.
+renderIrelandCountiesFilled
+    :: FeatureCollection
+    -> Map Text Text   -- ^ @countyName -> URL@ for htmx click actions
+    -> Map Text Text   -- ^ @countyName -> CSS fill@ (e.g. "hsl(80,60%,50%)")
+    -> Html
+renderIrelandCountiesFilled fc actions fills =
     let proj = geoIdentity & reflectY True & fitSize (mapW, mapH) (GoFeatureCollection fc)
         viewBox = "0 0 " <> tshow mapW <> " " <> tshow mapH
     in [hsx|
         <svg viewBox={viewBox} width="100%" style="display:block;">
-            {forEach (fcFeatures fc) (renderCounty proj actions)}
+            {forEach (fcFeatures fc) (renderCounty proj actions fills)}
         </svg>
     |]
   where
@@ -141,21 +151,36 @@ renderIrelandCounties fc actions =
     mapW = 960
     mapH = 600
 
-renderCounty :: Projection -> Map Text Text -> Feature -> Html
-renderCounty proj actions f =
+renderCounty :: Projection -> Map Text Text -> Map Text Text -> Feature -> Html
+renderCounty proj actions fills f =
     let d    = geoPath proj (GoFeature f)
         name = case decodeFeatureProperties f of
                    Right (CountyName n) -> n
                    Left _               -> ""
+        baseFill   = Map.findWithDefault neutralFill name fills
+        hoverFill  = if Map.member name fills then baseFill else neutralHover
         clickAttrs = case Map.lookup name actions of
             Just url -> [("hx-get", url), ("style", "cursor:pointer; transition: fill 0.15s ease;")]
             Nothing  -> [("style", "transition: fill 0.15s ease;")]
+        overJs  = "this.style.fill='" <> hoverFill <> "'"
+        outJs   = "this.style.fill='" <> baseFill  <> "'"
     in [hsx|
         <path d={d}
-              fill="#cfd8dc" stroke="#ffffff" stroke-width="0.7"
+              fill={baseFill} stroke="#ffffff" stroke-width="0.7"
               {...clickAttrs}
-              onmouseover="this.style.fill='#90a4ae'"
-              onmouseout="this.style.fill='#cfd8dc'">
+              onmouseover={overJs}
+              onmouseout={outJs}>
             <title>{name}</title>
         </path>
     |]
+  where
+    neutralFill  = "#cfd8dc"
+    neutralHover = "#90a4ae"
+
+-- | Map a ratio in [0, 1] onto a red→yellow→green CSS HSL string, clamping
+--   out-of-range inputs. Suitable for choropleth fills.
+ratioHue :: Double -> Text
+ratioHue r =
+    let clamped = max 0 (min 1 r)
+        hue     = round (120 * clamped) :: Int
+    in "hsl(" <> tshow hue <> ",60%,50%)"
